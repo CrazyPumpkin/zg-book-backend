@@ -1,0 +1,91 @@
+version: '3.1'
+
+services:
+  nginx:
+    image: nginx:latest
+    restart: always
+    volumes:
+      - ../:/opt/zg_app
+      - ./nginx/ssl:/etc/nginx/ssl
+    ports:
+      - "0.0.0.0:8050:80"
+      # - "0.0.0.0:443:443"
+    links:
+      - django
+    depends_on:
+      - django
+    command: /bin/bash -c '/opt/zg_app/zg_book_docker/run_nginx.sh'
+    container_name: zg-book-nginx
+
+  django:
+    build:
+      context: ../
+      dockerfile: ./zg_book_docker/Dockerfile
+    restart: always
+    working_dir: /opt/zg_app
+    volumes:
+      - ../:/opt/zg_app
+    env_file:
+      - ../.env
+    links:
+      - db
+      - redis
+    depends_on:
+      - db
+      - redis
+    expose:
+      - 2021
+    command: /bin/bash -c '/opt/zg_app/zg_book_docker/run_django.sh'
+    container_name: zg-book-django
+
+  worker:
+    build:
+      context: ../
+      dockerfile: ./zg_book_docker/Dockerfile
+    restart: always
+    working_dir: /opt/zg_app
+    volumes:
+      - ../:/opt/zg_app
+    env_file:
+      - ../.env
+    links:
+      - db
+      - redis
+    depends_on:
+      - db
+      - redis
+    command: /bin/bash -c '/opt/zg_app/zg_book_docker/run_celery.sh'
+    container_name: zg-book-worker
+
+  beat:
+    build:
+      context: ../
+      dockerfile: ./zg_book_docker/Dockerfile
+    restart: always
+    working_dir: /opt/zg_app
+    volumes:
+      - ../:/opt/zg_app
+    env_file:
+      - ../.env
+    links:
+      - db
+      - redis
+    depends_on:
+      - db
+      - redis
+    command: /bin/bash -c '/opt/zg_app/zg_book_docker/run_celery.sh beat'
+    container_name: zg-book-beat
+
+  db:
+    image: postgres:latest
+    restart: always
+    volumes:
+      - ../pgdata:/var/lib/postgresql/data
+    env_file:
+      - ../.env
+    container_name: zg-book-db
+
+  redis:
+    image: redis:latest
+    restart: always
+    container_name: zg-book-redis

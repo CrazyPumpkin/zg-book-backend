@@ -1,0 +1,83 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "array",
+    "items": {
+        "anyOf": [
+            {
+                "$ref": "#/definitions/textfragment"
+            },
+            {
+                "$ref": "#/definitions/image_lvl1"
+            }
+        ]
+    },
+    "definitions": {
+        "textfragment": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "enum": [
+                        "textfragment"
+                    ]
+                },
+                "id": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "type",
+                "id"
+            ]
+        },
+        "image_lvl2": {
+            "properties": {
+                "type": {
+                    "enum": [
+                        "image"
+                    ]
+                },
+                "id": {
+                    "type": "integer"
+                }
+            },
+            "required": [
+                "type",
+                "id"
+            ]
+        },
+        "image_lvl1": {
+            "properties": {
+                "type": {
+                    "enum": [
+                        "image"
+                    ]
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "content": {
+                    "type": "array",
+                    "items": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/definitions/textfragment"
+                            },
+                            {
+                                "$ref": "#/definitions/image_lvl2"
+                            }
+                        ]
+                    }
+                }
+            },
+            "required": [
+                "type",
+                "id",
+                "title",
+                "content"
+            ]
+        }
+    }
+}

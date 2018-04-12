@@ -1,0 +1,11 @@
+uwsgi:
+  master: 1
+  socket: :2021
+  # disable-logging: 1
+  max-requests: 5000
+  env: DJANGO_SETTINGS_MODULE=zg_book_project.settings
+  touch-reload: /tmp/reload
+  chdir: /opt/zg_app/src/
+  wsgi-file: ./zg_book_project/wsgi.py
+  buffer-size: 65535
+  logformat: %(ltime) %(uri) %(method) -> %(status) %(msecs)ms
